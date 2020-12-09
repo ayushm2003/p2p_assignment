@@ -93,11 +93,12 @@ def send_pings_to_everyone():
 	Routine that runs every 5 seconds; sends pings to every peer.
 	'''
 	# Your code here!
-	keys = STATE["peers"].keys()
+	keys = STATE["peers"].keys()  # list of all port numbers of peers
+
 	for key in keys:
 		message = {"msg_type": "PING", "ttl": 0, "data": None} 
 		send_message_to(key, message, False)
-		print("PINGd" + str(key))
+		#log_error("PINGd" + str(key))
 	pass
 
 
@@ -108,7 +109,20 @@ def evict_stale_peers():
 	Runs every second.
 	'''
 	# Your code here!
-	#for p in STATE["peers"]:
+	keys_to_pop = []
+
+	for key, value in STATE["peers"].items():
+		diff = time.time() - value  # difference in cuurent time and last heard time
+		#print(diff)
+
+		if value > 10:
+			log_error("There was one impostor among us" + str(key))  # display the text on the node interface
+			keys_to_pop.append(key)  # add the key to be removed fom peers list
+	
+	# remove peers
+	for key in keys_to_pop:
+		STATE["peers"].pop(key)
+
 	pass
 
 
