@@ -98,7 +98,9 @@ def respond(
 		if msg_type == "PING":
 			message = {"msg_type": "PONG", "ttl": 0, "data": None}
 			send_message_to(msg_originator, message, False)
-			log_message(message={"PONGd": msg_originator}, received=False)
+			RECEIVED_MESSAGES.add((msg_id, msg_originator))
+
+			log_error(RECEIVED_MESSAGES)
 
 	pass
 
