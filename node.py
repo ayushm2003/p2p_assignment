@@ -100,8 +100,8 @@ def respond(
 			send_message_to(msg_originator, message, False)
 			RECEIVED_MESSAGES.add((msg_id, msg_originator))
 
-			log_error(RECEIVED_MESSAGES)
-
+		elif msg_type == "PONG":
+			STATE["peers"][msg_originator] = time.time()
 	pass
 
 
