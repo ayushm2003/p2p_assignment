@@ -84,6 +84,22 @@ def respond(
 		Nothing
 	'''
 	# TODO: Your code here!
+	print("Entered")
+	'''
+	if msg_type not in MESSAGE_TYPES:
+		log_error("Incorrect message type" + msg_type)
+	'''
+
+	print(STATE)
+	STATE["peers"][msg_forwarder] = time.time()
+	#print("Updated timestamp" + str(msg_forwarder))
+
+	if not (msg_id, msg_originator) in RECEIVED_MESSAGES:
+		if msg_type == "PING":
+			message = {"msg_type": "PONG", "ttl": 0, "data": None}
+			send_message_to(msg_originator, message, False)
+			log_message(message={"PONGd": msg_originator}, received=False)
+
 	pass
 
 
@@ -98,7 +114,8 @@ def send_pings_to_everyone():
 	for key in keys:
 		message = {"msg_type": "PING", "ttl": 0, "data": None} 
 		send_message_to(key, message, False)
-		#log_error("PINGd" + str(key))
+		#log_message(message={"PINGd": key}, received=False)
+	
 	pass
 
 
@@ -110,12 +127,12 @@ def evict_stale_peers():
 	'''
 	# Your code here!
 	keys_to_pop = []
-
+	
 	for key, value in STATE["peers"].items():
 		diff = time.time() - value  # difference in cuurent time and last heard time
-		#print(diff)
 
-		if value > 10:
+		if diff > 10:
+			print(diff)
 			log_error("There was one impostor among us" + str(key))  # display the text on the node interface
 			keys_to_pop.append(key)  # add the key to be removed fom peers list
 	
