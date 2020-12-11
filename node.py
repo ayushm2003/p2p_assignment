@@ -85,23 +85,31 @@ def respond(
 	'''
 	# TODO: Your code here!
 	print("Entered")
-	'''
+	
+	# check if msg_type is valid
 	if msg_type not in MESSAGE_TYPES:
 		log_error("Incorrect message type" + msg_type)
-	'''
-
+	
 	print(STATE)
+	# update timestamp of forwarding peer
 	STATE["peers"][msg_forwarder] = time.time()
-	#print("Updated timestamp" + str(msg_forwarder))
 
+	'''
+	Check if message is already recieved. If not, process further, else drop the message.
+	RECIEVED_MESSAGES are stored as a tuple inside the set, consisting of msg_id and the msg_originator.
+	'''
 	if not (msg_id, msg_originator) in RECEIVED_MESSAGES:
 		if msg_type == "PING":
+			# reply with PONG to a PING
 			message = {"msg_type": "PONG", "ttl": 0, "data": None}
 			send_message_to(msg_originator, message, False)
-			RECEIVED_MESSAGES.add((msg_id, msg_originator))
 
 		elif msg_type == "PONG":
+			# update last heard timestamp of the peer when recieve PONG
 			STATE["peers"][msg_originator] = time.time()
+		
+		# add the message (as a tuple) to RECIEVED_MESSAGES set
+		RECEIVED_MESSAGES.add((msg_id, msg_originator))
 	pass
 
 
