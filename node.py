@@ -108,6 +108,12 @@ def respond(
 			# update last heard timestamp of the peer when recieve PONG
 			STATE["peers"][msg_originator] = time.time()
 		
+		else:  # if msg_type is PRIME
+			if STATE["biggest_prime"] < data:
+				STATE["biggest_prime"] = data
+				STATE["biggest_prime_sender"] = msg_originator
+				log_error("Good job   " + str(msg_originator))
+
 		# add the message (as a tuple) to RECIEVED_MESSAGES set
 		RECEIVED_MESSAGES.add((msg_id, msg_originator))
 	pass
@@ -119,13 +125,10 @@ def send_pings_to_everyone():
 	Routine that runs every 5 seconds; sends pings to every peer.
 	'''
 	# Your code here!
-	keys = STATE["peers"].keys()  # list of all port numbers of peers
-
-	for key in keys:
-		message = {"msg_type": "PING", "ttl": 0, "data": None} 
-		send_message_to(key, message, False)
-		#log_message(message={"PINGd": key}, received=False)
-	
+	for peer in [*STATE["peers"]]:  # iterates over elements of nested dictionary
+		message = {"msg_type": "PING", "ttl": 0, "data": None}
+		send_message_to(peer, message, False)
+		
 	pass
 
 
