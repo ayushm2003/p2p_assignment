@@ -114,6 +114,12 @@ def respond(
 				STATE["biggest_prime_sender"] = msg_originator
 				log_error("Good job   " + str(msg_originator))
 
+			if ttl > 0:
+				for peer in [*STATE["peers"]]:
+					if peer != msg_originator:
+						message = {"msg_type": "PRIME", "ttl": ttl-1, "data": data, "msg_originator": msg_originator}
+						send_message_to(peer, message, True)
+
 		# add the message (as a tuple) to RECIEVED_MESSAGES set
 		RECEIVED_MESSAGES.add((msg_id, msg_originator))
 	pass
