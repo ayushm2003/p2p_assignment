@@ -85,7 +85,7 @@ def respond(
 	'''
 	# TODO: Your code here!
 
-	
+
 	# check if msg_type is valid
 	if msg_type not in MESSAGE_TYPES:
 		log_error("Incorrect message type" + msg_type)
@@ -110,16 +110,20 @@ def respond(
 		
 		else:  # if msg_type is PRIME
 			if STATE["biggest_prime"] < data:
+				# store biggest prime and its generator if current prime in STATE is smaller
 				STATE["biggest_prime"] = data
 				STATE["biggest_prime_sender"] = msg_originator
 				log_error("Good job   " + str(msg_originator))
+
 			elif STATE["biggest_prime"] < data:
+				# if prime is smaller, inform the msg_originator of the biggest prime
 				message = {"msg_type": "PRIME", "ttl": 0, "data": STATE["biggest_prime"], "msg_originator": STATE["biggest_prime_sender"]}
 				send_message_to(msg_originator, message, False)
 
+			# forward the message if ttl > 0
 			if ttl > 0:
 				for peer in [*STATE["peers"]]:
-					if peer != msg_originator:
+					if peer != msg_originator:  # don't forward to msg_originator
 						message = {"msg_type": "PRIME", "ttl": ttl-1, "data": data, "msg_originator": msg_originator}
 						send_message_to(peer, message, True)
 
