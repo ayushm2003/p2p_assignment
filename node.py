@@ -84,7 +84,7 @@ def respond(
 		Nothing
 	'''
 	# TODO: Your code here!
-	print("Entered")
+
 	
 	# check if msg_type is valid
 	if msg_type not in MESSAGE_TYPES:
@@ -113,12 +113,18 @@ def respond(
 				STATE["biggest_prime"] = data
 				STATE["biggest_prime_sender"] = msg_originator
 				log_error("Good job   " + str(msg_originator))
+			elif STATE["biggest_prime"] < data:
+				message = {"msg_type": "PRIME", "ttl": 0, "data": STATE["biggest_prime"], "msg_originator": STATE["biggest_prime_sender"]}
+				send_message_to(msg_originator, message, False)
 
 			if ttl > 0:
 				for peer in [*STATE["peers"]]:
 					if peer != msg_originator:
 						message = {"msg_type": "PRIME", "ttl": ttl-1, "data": data, "msg_originator": msg_originator}
 						send_message_to(peer, message, True)
+
+			# add message originator to our peer list
+			STATE["peers"][msg_originator] = time.time()
 
 		# add the message (as a tuple) to RECIEVED_MESSAGES set
 		RECEIVED_MESSAGES.add((msg_id, msg_originator))
