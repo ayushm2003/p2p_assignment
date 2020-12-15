@@ -85,12 +85,10 @@ def respond(
 	'''
 	# TODO: Your code here!
 
-
 	# check if msg_type is valid
 	if msg_type not in MESSAGE_TYPES:
 		log_error("Incorrect message type" + msg_type)
 	
-	print(STATE)
 	# update timestamp of forwarding peer
 	STATE["peers"][msg_forwarder] = time.time()
 
@@ -132,7 +130,6 @@ def respond(
 
 		# add the message (as a tuple) to RECIEVED_MESSAGES set
 		RECEIVED_MESSAGES.add((msg_id, msg_originator))
-	pass
 
 
 @only_if_awake(STATE)
