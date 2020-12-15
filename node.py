@@ -105,8 +105,8 @@ def respond(
 			send_message_to(msg_originator, message, False)
 
 		elif msg_type == "PONG":
-			# update last heard timestamp of the peer when recieve PONG
-			STATE["peers"][msg_originator] = time.time()
+			# updated the timestamp above
+			return
 		
 		else:  # if msg_type is PRIME
 			if STATE["biggest_prime"] < data:
@@ -115,7 +115,7 @@ def respond(
 				STATE["biggest_prime_sender"] = msg_originator
 				log_error("Good job   " + str(msg_originator))
 
-			elif STATE["biggest_prime"] < data:
+			elif STATE["biggest_prime"] > data:
 				# if prime is smaller, inform the msg_originator of the biggest prime
 				message = {"msg_type": "PRIME", "ttl": 0, "data": STATE["biggest_prime"], "msg_originator": STATE["biggest_prime_sender"]}
 				send_message_to(msg_originator, message, False)
@@ -144,8 +144,6 @@ def send_pings_to_everyone():
 	for peer in [*STATE["peers"]]:  # iterates over elements of nested dictionary
 		message = {"msg_type": "PING", "ttl": 0, "data": None}
 		send_message_to(peer, message, False)
-		
-	pass
 
 
 @only_if_awake(STATE)
@@ -161,15 +159,12 @@ def evict_stale_peers():
 		diff = time.time() - value  # difference in cuurent time and last heard time
 
 		if diff > 10:
-			print(diff)
 			log_error("There was one impostor among us" + str(key))  # display the text on the node interface
 			keys_to_pop.append(key)  # add the key to be removed fom peers list
 	
 	# remove peers
 	for key in keys_to_pop:
 		STATE["peers"].pop(key)
-
-	pass
 
 
 @only_if_awake(STATE)
